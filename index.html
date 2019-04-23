@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <title>Grandes Santuarios Naturales a lo largo de Chile</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js" integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg==" crossorigin=""></script>
+</head>
+
+<body id="top">
+
+    <nav class="navbar navbar-expand-md fixed-top navbar-dark">
+      <div class="container">
+        <a class="navbar-brand" href="#top">Bienvenidos</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample01" aria-controls="navbarsExample01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarsExample01">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#map">Mapa</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#detalles">Detalles</a>
+                </li>
+                <li class="nav-item">
+                        <a class="nav-link" href="#novedad">Novedad</a>
+                    </li>
+            </ul>
+        </div>
+      </div>
+    </nav>
+
+    <header>
+        <div class="overlay"></div>
+        <video playsinline="playsinline" autoplay="autoplay" muted="muted" loop="loop">
+            <!--encontré un video de un condor-->
+            <source src="santuario-chile2.mp4" type="video/mp4">
+        </video>
+        <div class="container h-100">
+            <div class="d-flex h-100 text-center align-items-center">
+                <div class="w-100 text-white">
+                    <h1 class="display-3">Santuarios Nacionales</h1>
+                    <p class="lead mb-0">Grandes reservas de riqueza natural a lo largo de Chile</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section id="map">
+        <div id="mapid" style="width: 100%; height: 70vh;"></div>
+    </section>
+    
+     <section id="detalles" class="bg-light">
+        <div class="container-fluid">
+            <div class="row text-center">
+                <div class="col-12 py-3">
+                    Selecciona santuarios según su tipología
+                    <select id="selector" onchange="mostrador()">
+                        <option>Todas los santuarios</option>
+                        <option>Tipología Fauna</option>
+                        <option>Tipología Flora</option>
+                        <option>Tipología Geología</option>
+                        <option>Tipología Paisaje</option>
+                        <option>Tipología Vegetación</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="bg-boscoso">
+        <div class="container">
+            <div class="row py-3">
+                  <div class="card-columns" id="parques">
+                    <!--aquí hay un cambio-->
+                  </div>
+            </div>
+        </div>
+    </section>
+ <section id="novedad">
+       </section>
+
+    <footer>
+        <div class="container-fluid">
+            <div class="row small py-2 bg-light text-light">
+                <div class="col-sm-6 py-3">Seminario de Gráfica Computacional I</div>
+                <div class="col-sm-6 py-3 text-md-right">Estefanía Maturana - Camila Uribe © 2019</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script>
+        // Lo primero es obtener un JSON y parsearlo en una variable de nombre data
+        $.getJSON("https://api.myjson.com/bins/jarbk", function(data) {
+            // Si imprimes data en consola logras dos cosas
+            // Lo primero es comprobar el parseo de JSON requerido
+            // Lo segundo es conocer la estructura del JSON parseado
+            console.log(data);
+            // Luego puedes colocar el mapa, seteando un centro y zoom
+            var mymap = L.map('mapid').setView([-36, -70], 4);
+            L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+                maxZoom: 8,
+                id: 'mapbox.dark' //otras opciones: mapbox.satellite, mapbox.streets, mapbox.dark, mapbox.light
+            }).addTo(mymap); 
+            
+            {
+                var LeafIcon = L.Icon.extend({
+		options: {
+			shadowUrl: 'marker-shadow.png',
+			iconSize:     [25, 41],
+			shadowSize:   [41, 41],
+			iconAnchor:   [12, 41],
+			shadowAnchor: [4, 62],
+			popupAnchor:  [1, -34]
+		}
+	})
+            };
+            
+            var greenIcon = new LeafIcon({iconUrl: 'marker-icon-2x-green.png'});
+
+            
+            
+            // Después puedes explorar el arreglo en la variable de nombre data con un ciclo for
+            for (var x = 0; x < data.length; x++) {
+                // con esto se agregan puntos en el plano por cada dato
+                L.marker([data[x].ubicacion[0], data[x].ubicacion[1]], {icon: greenIcon}).addTo(mymap).bindPopup(data[x].nombre).closePopup();
+                // aprovechando el ciclo for, podemos crear otros elementos, fuera del mapa
+                // revisen el primer ejemplo en https://getbootstrap.com/docs/4.0/components/card/
+                    var segundo =   "<div class=\"card " + data[x].tipologia + "\">";
+                        var tercero =   "<img src=\"" + data[x].foto + "\" class=\"card-img-top\">";
+                        var cuarto  =   "<div class=\"card-body\">";
+                            var quinto  =   "<h5 class=\"card-title\">" + data[x].nombre + "</h5>"
+                            var sexto   =   "<h6 id=\"sexto\" class=\"card-text\"> Tipología</h6>" + data[x].tipologia + "</h6>";
+                            var septimo   =   "<p class=\"card-text\">" + data[x].ha + " hectáreas</p>";
+                            var octavo =   "<a href=\"" + data[x].url + "\" target=\"_blank\" class=\"btn bg-dark link btn-sm text-light\">Monumentos</a>";
+                    var noveno  =   "</div>";
+                var decimo  =   "</div>";
+                var undecimo  =   "</div>";
+                // esto se agrega tantas veces como puntos en el mapa, porque estamos dentro del mismo ciclo for
+                $("#parques").append(segundo + tercero + cuarto + quinto + sexto + septimo + octavo + noveno + decimo + undecimo);
+            }
+        
+        });
+        //Agrego lo siguiente para que al clic del menú la página suba y baje en 1 segundo, suavecito
+        $('a[href*="#"]:not([href="#"])').click(function() {
+            if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
+              var target = $(this.hash);
+              target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+              if (target.length) {
+                $('html, body').animate({
+                  scrollTop: (target.offset().top - 54)
+                }, 1000);
+                return false;
+              }
+            }
+        });
+        
+        $(document).scroll(function(){
+         if ($(this).scrollTop() > 650) {
+          $('nav').addClass("verde");
+         } else {
+          $('nav').removeClass("verde");
+         }
+      });
+        
+        
+        function mostrador() {
+            
+            var x = document.getElementById("selector").value;
+            
+            if (x.includes("auna")) {
+                $(".Fauna").show(2000);
+                $(".Flora, .Vegetación, .Paisaje, .Geología").hide(2000)
+                
+            } else if (x.includes("lora")) {
+                $(".Flora").show(2000)
+                $(".Fauna, .Vegetación, .Paisaje, .Geología").hide(2000)
+                
+            } else if (x.includes("egetación")) {
+                $(".Vegetación").show(2000);
+                $(".Fauna, .Flora, .Paisaje, .Geología").hide(2000)
+                
+            } else if (x.includes("aisaje")) {
+                $(".Paisaje").show(2000);
+                $(".Fauna, .Flora, .Vegetación, .Geología").hide(2000)
+                
+            } else if (x.includes("eología")) {
+                $(".Geología").show(2000);
+                $(".Fauna, .Flora, .Vegetación, .Paisaje").hide(2000)
+                
+            } else {
+                $(".Fauna, .Flora, .Vegetación, .Paisaje, .Geología").show(2000)
+            }
+
+        } // aquí cerramos la función que trabaja con el select
+        
+    </script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/p5.min.js"></script>   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/addons/p5.dom.min.js"></script>
+    <script>
+        var regiones;
+        
+        
+        function preload(){
+            regiones = loadJSON("https://api.myjson.com/bins/epxog");
+        }
+
+        function setup() {
+            createCanvas(windowWidth,600).parent("novedad");
+            background(300);
+            fill('rgb(11,83,69)');
+            noStroke();
+            textAlign(CENTER);
+            rectMode(CENTER);
+            textSize(16);
+            textFont('Overpass');
+            textStyle(BOLD);
+            text('Regiones con mayor cantidad de Santuarios Naturales', width/2, 100);
+           regiones.santuarios.forEach(function(regiones,i){
+                ellipse((width/11)*(1+i), height/2, regiones.cantidad*5, regiones.cantidad*5);
+                text(regiones.region, (width/11)*(1+i), (height/2)+100, 75, 75);
+            });
+        }
+    
+        function draw() {
+            // hay casos en lo que puedes dibujar en el setup
+        }     
+   
+     </script>
+     
+     
+</body>
+
+</html>
